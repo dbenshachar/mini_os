@@ -10,15 +10,25 @@ static void putc(char c){ while (UARTFR & TXFF) {} UARTDR = (unsigned)c; }
 static void puts(const char*s){ while(*s) putc(*s++); }
 static int  getc(void){ while (UARTFR & RXFE) {} return UARTDR & 0xFF; }
 
-/*Execute by running
->>>chmod +x run.bash && ./run.bash
+/*Execute by running:
+chmod +x run.bash && ./run.bash
 */
 void kmain(void){
     puts("Kernel is running!\n> ");
     for(;;){
         int c = getc();
-        if (c=='\r' || c=='\n'){ puts("\n> "); continue; } 
-        if (c==0x7F || c=='\b'){ puts("\b \b"); continue; }
+        if (c== '\n') {
+            puts("\n> ");
+            continue;
+        }
+        if (c =='\r'){
+            puts("\n> ");
+            continue;
+        } 
+        if (c ==0x7F || c =='\b'){
+            puts("\b \b");
+            continue;
+        }
         putc((char)c);
     }
 }
