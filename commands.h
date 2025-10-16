@@ -22,7 +22,7 @@ int fmake(char* type, char* name) {
         return fs_mkdir(name, target_folder);
     }
     if (str_eq(type, "file")) {
-        return 1;
+        return fs_mkfile(name, target_folder);
     }
     puts("\nInvalid make type");
     return 1;

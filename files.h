@@ -27,7 +27,7 @@ struct file {
 
 struct folder {
     char name[MAX_NAME_LENGTH];
-    file files[MAX_ITEMS];
+    file* files[MAX_ITEMS];
     folder* folders[MAX_ITEMS];
 };
 
@@ -70,11 +70,11 @@ int fs_return() {
 int fs_wipe(folder* f) {
     for (int i = 0; i < MAX_ITEMS; i++) {
         for (int j = 0; j < MAX_NAME_LENGTH; j++) {
-            f->files[i].name[j] = 0;
+            f->files[i]->name[j] = 0;
             f->folders[i]->name[j] = 0;
         }
-        f->files[i].start_block = 0;
-        f->files[i].t_size = 0;
+        f->files[i]->start_block = 0;
+        f->files[i]->t_size = 0;
 
         if (!str_eq(f->folders[i]->name, "\0")) {
             fs_wipe(f->folders[i]);
@@ -111,12 +111,30 @@ int fs_ls(folder* f) {
     }
     puts("\n*files*\n");
     for (int i=0; i<MAX_ITEMS; i++) {
-        if  (!str_eq(f->files[i].name, "\0")) {
-            puts(f->folders[i]->name);
+        if  (!str_eq(f->files[i]->name, "\0")) {
+            puts(f->files[i]->name);
             puts("\n");
         }
     }
 }
+
+int fs_mkfile(char* name, folder* f) {
+    static file file_pool[MAX_ITEMS];
+    static int file_index = 0;
+
+    for (int i=0; i<MAX_ITEMS; i++) {
+        if (str_eq(f->files[i]->name, "\0")) {
+            if (file_index >= MAX_ITEMS) return 0;
+            f->files[i] = &file_pool[file_index++];
+            name_set(name, f->files[i]->name);
+            puts("\ncreated ");
+            puts(name);
+            return 1;
+        }
+    }
+    return 0;
+}
+
 
 int fs_cd(folder* f, char* name) {
     for (int i=0; i<MAX_ITEMS; i++) {
