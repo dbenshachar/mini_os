@@ -58,6 +58,7 @@ int execute(char* cmd) {
     if (str_eq(exec_command, "finit")) {return fs_init();}
     if (str_eq(exec_command, "freturn")) {fs_return(); puts("\n"); puts(target_folder->name);return 1;}
     if (str_eq(exec_command, "fdir")) {puts("\n"); puts(target_folder->name);return 1;}
+    if (str_eq(exec_command, "fwipe")) {fs_wipe(target_folder); puts("\n"); puts("wiped "); puts(target_folder->name); return 1;}
     return 0;
 }
 

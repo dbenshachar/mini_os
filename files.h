@@ -65,7 +65,10 @@ int fs_wipe(folder* f) {
         }
         f->files[i].start_block = 0;
         f->files[i].t_size = 0;
-        fs_wipe(f->folders[i]);
+
+        if (!str_eq(f->folders[i]->name, "\0")) {
+            fs_wipe(f->folders[i]);
+        }
     }
     return 1;
 }
