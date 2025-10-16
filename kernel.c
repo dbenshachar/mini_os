@@ -19,13 +19,18 @@ void backspace() {
 chmod +x run.bash && ./run.bash
 */
 void kmain(void){
+    fs_init();
+    fs_return();
     puts("\n> ");
     
     while (1)
     {
         int c = getc();
         if (c == '\n' || c == '\r') {
-            done = execute(cmdbuf);
+            cmdbuf[cmdlen] = '\0';
+            cmdlen++;
+
+            done = !execute(cmdbuf);
             if (done) {puts("\nTried to quit!");}
             new_line();
             puts("\n> ");

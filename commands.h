@@ -2,6 +2,7 @@
 #define COMMANDS_H
 
 #include <stdint.h>
+#include "files.h"
 
 #define MAX_PARAMS 32
 #define MAX_PARAM_LENGTH 16
@@ -19,11 +20,11 @@ static int  getc(void){ while (UARTFR & RXFE) {} return UARTDR & 0xFF; }
 int echo(char *string) {
     puts("\n");
     puts(string);
-    return 0;
+    return 1;
 }
 
 int quit() {
-    return 1;
+    return 0;
 }
 
 uint8_t deserialize_params(char *cmd, char **params, uint8_t max_params) {
@@ -46,16 +47,6 @@ uint8_t deserialize_params(char *cmd, char **params, uint8_t max_params) {
     return count;
 }
 
-int str_eq(const char *a, const char *b) {
-    while (*a && *b) {
-        if (*a != *b)
-            return 0;
-        a++;
-        b++;
-    }
-    return *a == *b;
-}
-
 int execute(char* cmd) {
     char *params[MAX_PARAMS];
     int param_count = deserialize_params(cmd, params, MAX_PARAMS);
@@ -64,6 +55,9 @@ int execute(char* cmd) {
     const char *exec_command = params[0];
     if (str_eq(exec_command, "quit")) {return quit();}
     if (str_eq(exec_command, "echo")) {return echo(params[1]);}
+    if (str_eq(exec_command, "finit")) {return fs_init();}
+    if (str_eq(exec_command, "freturn")) {fs_return(); puts("\n"); puts(target_folder->name);return 1;}
+    if (str_eq(exec_command, "fdir")) {puts("\n"); puts(target_folder->name);return 1;}
     return 0;
 }
 
