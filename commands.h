@@ -7,16 +7,6 @@
 #define MAX_PARAMS 32
 #define MAX_PARAM_LENGTH 16
 
-#define UART0_BASE 0x09000000UL
-#define UARTDR (*(volatile unsigned int *)(UART0_BASE + 0x00))
-#define UARTFR (*(volatile unsigned int *)(UART0_BASE + 0x18))
-#define TXFF (1u<<5)
-#define RXFE (1u<<4)
-
-static void putc(char c){ while (UARTFR & TXFF) {} UARTDR = (unsigned)c; }
-static void puts(const char*s){ while(*s) putc(*s++); }
-static int  getc(void){ while (UARTFR & RXFE) {} return UARTDR & 0xFF; }
-
 int echo(char *string) {
     puts("\n");
     puts(string);
@@ -59,6 +49,7 @@ int execute(char* cmd) {
     if (str_eq(exec_command, "freturn")) {fs_return(); puts("\n"); puts(target_folder->name);return 1;}
     if (str_eq(exec_command, "fdir")) {puts("\n"); puts(target_folder->name);return 1;}
     if (str_eq(exec_command, "fwipe")) {fs_wipe(target_folder); puts("\n"); puts("wiped "); puts(target_folder->name); return 1;}
+    if (str_eq(exec_command, "flist")) {puts("\n"); fs_ls(target_folder); return 1;}
     return 0;
 }
 
