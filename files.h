@@ -84,10 +84,17 @@ int fs_wipe(folder* f) {
 }
 
 int fs_mkdir(char* name, folder* f) {
+    static folder folder_pool[MAX_ITEMS];
+    static int folder_index = 0;
+
     for (int i=0; i<MAX_ITEMS; i++) {
-        if (!str_eq(f->folders[i]->name, "\0")) {
-            name_set(name, f->folders[i]->name);
+        if (str_eq(f->folders[i]->name, "\0")) {
+            if (folder_index >= MAX_ITEMS) return 0;
+            f->folders[i] = &folder_pool[folder_index++];
             fs_wipe(f->folders[i]);
+            name_set(name, f->folders[i]->name);
+            puts("\ncreated ");
+            puts(name);
             return 1;
         }
     }
@@ -95,20 +102,31 @@ int fs_mkdir(char* name, folder* f) {
 }
 
 int fs_ls(folder* f) {
-    puts("*folders*");
+    puts("*folders*\n");
     for (int i=0; i<MAX_ITEMS; i++) {
         if  (!str_eq(f->folders[i]->name, "\0")) {
             puts(f->folders[i]->name);
             puts("\n");
         }
     }
-    puts("\n*files*");
+    puts("\n*files*\n");
     for (int i=0; i<MAX_ITEMS; i++) {
         if  (!str_eq(f->files[i].name, "\0")) {
             puts(f->folders[i]->name);
             puts("\n");
         }
     }
+}
+
+int fs_cd(folder* f, char* name) {
+    for (int i=0; i<MAX_ITEMS; i++) {
+        if (str_eq(f->folders[i]->name, name)) {
+            target_folder = f->folders[i];
+            return 1;
+        }
+        if (str_eq(f->folders[i]->name, "\0")) {return 0;}
+    }
+    return 0;
 }
 
 #endif

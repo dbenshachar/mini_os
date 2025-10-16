@@ -17,6 +17,17 @@ int quit() {
     return 0;
 }
 
+int fmake(char* type, char* name) {
+    if (str_eq(type, "folder")) {
+        return fs_mkdir(name, target_folder);
+    }
+    if (str_eq(type, "file")) {
+        return 1;
+    }
+    puts("Invalid make type");
+    return 1;
+}
+
 uint8_t deserialize_params(char *cmd, char **params, uint8_t max_params) {
     uint8_t count = 0;
     char *p = cmd;
@@ -50,7 +61,10 @@ int execute(char* cmd) {
     if (str_eq(exec_command, "fdir")) {puts("\n"); puts(target_folder->name);return 1;}
     if (str_eq(exec_command, "fwipe")) {fs_wipe(target_folder); puts("\n"); puts("wiped "); puts(target_folder->name); return 1;}
     if (str_eq(exec_command, "flist")) {puts("\n"); fs_ls(target_folder); return 1;}
-    return 0;
+    if (str_eq(exec_command, "fmake")) {fmake(params[1], params[2]); return 1;}
+    if (str_eq(exec_command, "fchange")) {target_folder, (params[1]); puts(target_folder->name); return 1;}
+    puts("\nInvalid command!");
+    return 1;
 }
 
 #endif
