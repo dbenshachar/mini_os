@@ -31,11 +31,12 @@ chmod +x run.bash && ./run.bash
 void kmain(void){
     puts("\n> ");
     
-    while (!done)
+    while (1)
     {
         int c = getc();
         if (c == '\n' || c == '\r') {
             done = execute(cmdbuf);
+            if (done) {puts("\nTried to quit!");}
             new_line();
             puts("\n> ");
             continue;
@@ -45,6 +46,10 @@ void kmain(void){
             puts("\b \b");
             continue;
         }
+        cmdbuf[cmdlen] = c;
+        cmdlen++;
         putc((char)c);
     }
+
+    puts("\nTried to quit\n> ");
 }
