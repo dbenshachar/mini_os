@@ -1,21 +1,29 @@
 #ifndef COMMANDS_H
 #define COMMANDS_H
 
+#include <stdint.h>
+
 #define MAX_PARAMS 32
 #define MAX_PARAM_LENGTH 16
 
-#include <stdint.h>
+#define UART0_BASE 0x09000000UL
+#define UARTDR (*(volatile unsigned int *)(UART0_BASE + 0x00))
+#define UARTFR (*(volatile unsigned int *)(UART0_BASE + 0x18))
+#define TXFF (1u<<5)
+#define RXFE (1u<<4)
 
-void echo() {
+static void putc(char c){ while (UARTFR & TXFF) {} UARTDR = (unsigned)c; }
+static void puts(const char*s){ while(*s) putc(*s++); }
+static int  getc(void){ while (UARTFR & RXFE) {} return UARTDR & 0xFF; }
 
+int echo(char *string) {
+    puts("\n");
+    puts(string);
+    return 0;
 }
 
 int quit() {
     return 1;
-}
-
-void display() {
-
 }
 
 uint8_t deserialize_params(char *cmd, char **params, uint8_t max_params) {
@@ -55,6 +63,7 @@ int execute(char* cmd) {
 
     const char *exec_command = params[0];
     if (str_eq(exec_command, "quit")) {return quit();}
+    if (str_eq(exec_command, "echo")) {return echo(params[1]);}
     return 0;
 }
 
