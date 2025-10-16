@@ -11,16 +11,9 @@ static void putc(char c){ while (UARTFR & TXFF) {} UARTDR = (unsigned)c; }
 static void puts(const char*s){ while(*s) putc(*s++); }
 static int  getc(void){ while (UARTFR & RXFE) {} return UARTDR & 0xFF; }
 
+int done = 0;
 char cmdbuf[256];
 uint8_t cmdlen = 0;
-
-void echo() {
-
-}
-
-void execute() {
-
-}
 
 void new_line() {
     cmdbuf[0] = '\0';
@@ -36,11 +29,13 @@ void backspace() {
 chmod +x run.bash && ./run.bash
 */
 void kmain(void){
-    puts("Kernel\n> ");
+    puts("\n> ");
     
-    for(;;){
+    while (!done)
+    {
         int c = getc();
         if (c == '\n' || c == '\r') {
+            done = execute(cmdbuf);
             new_line();
             puts("\n> ");
             continue;
