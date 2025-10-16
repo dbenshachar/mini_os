@@ -21,8 +21,7 @@ typedef struct folder folder;
 
 struct file {
     char name[MAX_NAME_LENGTH];
-    uint32_t start_block;
-    uint16_t t_size;
+    char* content;
 };
 
 struct folder {
@@ -73,8 +72,7 @@ int fs_wipe(folder* f) {
             f->files[i]->name[j] = 0;
             f->folders[i]->name[j] = 0;
         }
-        f->files[i]->start_block = 0;
-        f->files[i]->t_size = 0;
+        f->files[i]->content = 0;
 
         if (!str_eq(f->folders[i]->name, "\0")) {
             fs_wipe(f->folders[i]);
@@ -145,6 +143,28 @@ int fs_cd(folder* f, char* name) {
         if (str_eq(f->folders[i]->name, "\0")) {return 0;}
     }
     return 0;
+}
+
+file* get_file(char* name) {
+    file* res;
+    for (int i=0; i<MAX_ITEMS; i++) {
+        if (str_eq(target_folder->files[i]->name, name)) {
+            res = target_folder->files[i];
+            return res;
+        }
+    }
+    return (file*)0;
+}
+
+int fs_write(file* f, char* content) {
+    if (!f) {return 0;}
+    f->content = content;
+    return 1;
+}
+
+char* fs_read(const file* f) {
+    if (!f) return 0;
+    return f->content;
 }
 
 #endif

@@ -63,6 +63,17 @@ int execute(char* cmd) {
     if (str_eq(exec_command, "flist")) {puts("\n"); fs_ls(target_folder); return 1;}
     if (str_eq(exec_command, "fmake")) {fmake(params[1], params[2]); return 1;}
     if (str_eq(exec_command, "fchange")) {fs_cd(target_folder, params[1]); puts("\n"); puts(target_folder->name); return 1;}
+    if (str_eq(exec_command, "fread")) {
+        puts("\n");
+        puts(fs_read(get_file(params[1])));
+        return 1;
+    }
+    if (str_eq(exec_command, "fwrite")) {
+        file* f = get_file(params[1]);
+        if (!f) {return 0;}
+        fs_write(f, params[2]);
+        return 1;
+    }
     puts("\nInvalid command!");
     return 1;
 }
